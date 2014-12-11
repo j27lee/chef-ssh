@@ -7,10 +7,11 @@ action :add do
   host, port = new_resource.host.split(':')
   # set the port to the default (22) if it wasn't already set
   port = new_resource.port unless port
+  type = new_resource.type || 'rsa'
 
   key = new_resource.key
   if key.nil?
-    results = `ssh-keyscan #{new_resource.hashed ? '-H ' : ''} -p #{port.to_i} #{Shellwords.escape(host)}`
+    results = `ssh-keyscan #{new_resource.hashed ? '-H ' : ''} -t #{type} -p #{port.to_i} #{Shellwords.escape(host)}`
     Chef::Application.fatal! results.strip if key =~ /getaddrinfo/
     key = results.strip
   end
